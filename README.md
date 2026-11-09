@@ -7,7 +7,6 @@
 El backend está construido con **FastAPI**, integrando autenticación segura, control de acceso basado en roles, validación estricta de datos, persistencia en PostgreSQL y módulos de inteligencia artificial para análisis de amenazas.
 
 ---
-
 ## Objetivo del Backend
 
 El objetivo principal del backend es proporcionar una capa segura, escalable y modular para:
