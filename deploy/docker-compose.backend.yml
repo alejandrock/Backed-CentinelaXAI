@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: centinelax-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: centinelax
+      POSTGRES_USER: centinelax
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - /srv/centinelax/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U centinelax -d centinelax"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - centinelax
+
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    container_name: centinelax-backend
+    restart: unless-stopped
+    env_file:
+      - ../../backend/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://centinelax:${POSTGRES_PASSWORD}@postgres:5432/centinelax
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - centinelax
+
+networks:
+  centinelax:
+    name: centinelax
